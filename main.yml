@@ -49,8 +49,8 @@
         src: report.html.j2
         dest: "{{ html_report_path }}"
       vars:
-        start_time: "{{ start_time.stdout }}"
-        end_time: "{{ end_time.stdout }}"
+        start_time: "{{ start_time }}"
+        end_time: "{{ end_time }}"
         duration: "{{ duration }}"
         packages: "{{ pkg_list.stdout_lines }}"
 
@@ -59,7 +59,7 @@
         src: report.adoc.j2
         dest: "{{ adoc_report_path }}"
       vars:
-        start_time: "{{ start_time.stdout }}"
+        start_time: "{{ start_time['stdout'] }}"
         end_time: "{{ end_time.stdout }}"
         duration: "{{ duration }}"
         packages: "{{ pkg_list.stdout_lines }}"
