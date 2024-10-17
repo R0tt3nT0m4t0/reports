@@ -2,7 +2,6 @@
 - name: Generate Reports of Pending Upgrades on Systems
   hosts: all
   become: yes
-  gather_facts: false
 
   vars:
     git_repo_path: /tmp/reports.tmp
@@ -16,7 +15,8 @@
   tasks:
 
     - name: Record Start Time
-      ansible.builtin.command: date +%s
+      ansible.builtin.command:
+        cmd: "date +%s"
       register: start_time
       
     - name: Gather list of packages that need to be upgraded
@@ -25,15 +25,17 @@
       register: pkg_list
 
     - name: Sleep 10 Seconds to Make it Interesting
-      ansible.builtin.command: sleep 10
+      ansible.builtin.command:
+        cmd: "sleep 10"
 
     - name: Record End Time
-      ansible.builtin.command: date +%s
+      ansible.builtin.command: 
+        cmd: "date +%s"
       register: end_time
 
     - name: Calculate Duration
       set_fact:
-        duration: "{{ end_time | int - start_time | int }}"
+        duration: "{{ end_time.stdout | int - start_time.stdout | int }}"
 
     - name: Clone the Reports Repo
       ansible.builtin.git:
@@ -47,9 +49,9 @@
         src: report.html.j2
         dest: "{{ html_report_path }}"
       vars:
-        start_time: "{{ start_time }}"
-        end_time: "{{ end_time }}"
-        duration: "{{ duration }} seconds"
+        start_time: "{{ start_time.stdout }}"
+        end_time: "{{ end_time.stdout }}"
+        duration: "{{ duration }}"
         packages: "{{ pkg_list.stdout_lines }}"
 
     - name: Generate Asciidoc report using Jinja2 template
@@ -57,9 +59,9 @@
         src: report.adoc.j2
         dest: "{{ adoc_report_path }}"
       vars:
-        start_time: "{{ start_time }}"
-        end_time: "{{ end_time }}"
-        duration: "{{ duration }} seconds"
+        start_time: "{{ start_time.stdout }}"
+        end_time: "{{ end_time.stdout }}"
+        duration: "{{ duration }}"
         packages: "{{ pkg_list.stdout_lines }}"
 
     - name: Add New Files
