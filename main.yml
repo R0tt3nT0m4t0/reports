@@ -51,9 +51,7 @@
         chdir: "{{ git_repo_path }}"
 
     - name: Push Reports
-      ansible.builtin.git:
-        repo: "{{ git_remote_repo }}"
-        dest: "{{ git_repo_path }}"
-        version: main
-        update: true
+      ansible.builtin.command:
+        cmd: git push "{{ git_remote_repo }}" main
+        chdir: "{{ git_repo_path }}"
 
