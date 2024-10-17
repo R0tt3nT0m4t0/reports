@@ -1,0 +1,22 @@
+- name: Generate Report of OS Upgrades
+  hosts: all
+  gather_facts: true
+
+  tasks:
+  
+    - name: Verify Pending Upgrades
+      ansible.builtin.yum:
+        list: updates
+      become: yes
+      register: available_updates
+
+- name: Generate HTML Report
+  hosts: all
+  gather_facts: false
+
+  tasks:
+  
+    - name: Report
+      ansible.buitin.template:
+      
+      run_once: yes
