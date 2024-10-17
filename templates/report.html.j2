@@ -6,6 +6,9 @@
 </head>
 <body>
     <h1>Package Upgrade Report</h1>
+		<p>Start Time: {{ start_time }}</p>
+		<p>End Time: {{ end_time }}</p>
+		<p>Duration: {{ duration }}</p>
     <p>The following packages need to be upgraded:</p>
     <ul>
     {% for pkg in packages %}

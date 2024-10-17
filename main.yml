@@ -7,17 +7,29 @@
     git_repo_path: /tmp/reports.tmp
     git_commit_message: "Updated upgrade reports"
     git_remote_repo: "https://{{ github_token }}@github.com/R0tt3nT0m4t0/reports.git"
-    html_report_path: "{{ git_repo_path }}/reports/upgrades_report.html"
-    adoc_report_path: "{{ git_repo_path }}/reports/upgrades_report.adoc"
+    html_report_path: "{{ git_repo_path }}/reports/upgrades_report{{ ansible_date_time.date }}.html"
+    adoc_report_path: "{{ git_repo_path }}/reports/upgrades_report{{ ansible_date_time.date }}.adoc"
   vars_files:
     - secret.yml
 
   tasks:
 
+    - name: Record Start Time
+      set_fact:
+        start_time: "{{ ansible_date_time.iso8601 }}"
+
     - name: Gather list of packages that need to be upgraded
       ansible.builtin.command:
         cmd: "{{ ansible_pkg_mgr }} list updates"
       register: pkg_list
+
+    - name: Record End Time
+      set_fact:
+        end_time: "{{ ansible_date_time.iso8601 }}"
+
+    - name: Calculate Duration
+      set_fact:
+        duration: "{{ (ansible_date_time.second - start_time.split('T')[1].split(':')[2]|int) + 60 * ((ansible_date_time.minute - start_time.split('T')[1].split(':')[1]|int) + 60 * (ansible_date_time.hour - start_time.split('T')[1].split(':')[0]|int)) }}"
 
     - name: Clone the Reports Repo
       ansible.builtin.git:
@@ -31,6 +43,9 @@
         src: report.html.j2
         dest: "{{ html_report_path }}"
       vars:
+        start_time: "{{ start_time }}"
+        end_time: "{{ end_tine }}"
+        duration: "{{ duration }} seconds"
         packages: "{{ pkg_list.stdout_lines }}"
 
     - name: Generate Asciidoc report using Jinja2 template
@@ -38,6 +53,9 @@
         src: report.adoc.j2
         dest: "{{ adoc_report_path }}"
       vars:
+        start_time: "{{ start_time }}"
+        end_time: "{{ end_tine }}"
+        duration: "{{ duration }} seconds"
         packages: "{{ pkg_list.stdout_lines }}"
 
     - name: Add New Files
@@ -54,4 +72,5 @@
       ansible.builtin.command:
         cmd: git push "{{ git_remote_repo }}" main
         chdir: "{{ git_repo_path }}"
+
 
