@@ -5,16 +5,16 @@
 [%header,cols="1,1",stripes=even,align=center]
 |===
 |DESCRIPTION | TIME
-|Start Time | {'changed': True, 'stdout': '1729190273', 'stderr': '', 'rc': 0, 'cmd': ['date', '+%s'], 'start': '2024-10-17 13:37:53.677974', 'end': '2024-10-17 13:37:53.680144', 'delta': '0:00:00.002170', 'msg': '', 'stdout_lines': ['1729190273'], 'stderr_lines': [], 'failed': False}
-|End Time | {'changed': True, 'stdout': '1729190285', 'stderr': '', 'rc': 0, 'cmd': ['date', '+%s'], 'start': '2024-10-17 13:38:05.319683', 'end': '2024-10-17 13:38:05.321872', 'delta': '0:00:00.002189', 'msg': '', 'stdout_lines': ['1729190285'], 'stderr_lines': [], 'failed': False}
-|Duration | 12
+|Start Time | {'changed': True, 'stdout': '1729190316', 'stderr': '', 'rc': 0, 'cmd': ['date', '+%s'], 'start': '2024-10-17 13:38:36.637188', 'end': '2024-10-17 13:38:37.641026', 'delta': '0:00:01.003838', 'msg': '', 'stdout_lines': ['1729190316'], 'stderr_lines': [], 'failed': False}
+|End Time | {'changed': True, 'stdout': '1729190329', 'stderr': '', 'rc': 0, 'cmd': ['date', '+%s'], 'start': '2024-10-17 13:38:49.335738', 'end': '2024-10-17 13:38:49.337990', 'delta': '0:00:00.002252', 'msg': '', 'stdout_lines': ['1729190329'], 'stderr_lines': [], 'failed': False}
+|Duration | 13
 |===
 
 == Packages
 
 The following packages need to be upgraded:
 
-- Last metadata expiration check: 3:07:54 ago on Thu 17 Oct 2024 10:30:00 AM CDT.
+- Last metadata expiration check: 3:08:38 ago on Thu 17 Oct 2024 10:30:00 AM CDT.
 - Available Upgrades
 - deja-dup.x86_64                46.1-2.fc40                      updates         
 - firefox.x86_64                 131.0.3-1.fc40                   updates         
