@@ -16,7 +16,7 @@
 
     - name: Record Start Time
       set_fact:
-        start_time: "{{ ansible_date_time.epoch }}"
+        start_time: "{{ ansible_date_time.second }}"
 
     - name: Gather list of packages that need to be upgraded
       ansible.builtin.command:
@@ -28,7 +28,7 @@
 
     - name: Record End Time
       set_fact:
-        end_time: "{{ ansible_date_time.epoch }}"
+        end_time: "{{ ansible_date_time.second }}"
 
     - name: Calculate Duration
       set_fact:
@@ -46,9 +46,9 @@
         src: report.html.j2
         dest: "{{ html_report_path }}"
       vars:
-        start_time: "{{ start_time | int | strftime('%Y-%m-%d %H:%M:%S') }}"
-        end_time: "{{ end_time | int | strftime('%Y-%m-%d %H:%M:%S') }}"
-        duration: "{{ duration | int | strftime('%Y-%m-%d %H:%M:%S') }} seconds"
+        start_time: "{{ start_time }}"
+        end_time: "{{ end_time }}"
+        duration: "{{ duration }} seconds"
         packages: "{{ pkg_list.stdout_lines }}"
 
     - name: Generate Asciidoc report using Jinja2 template
@@ -56,9 +56,9 @@
         src: report.adoc.j2
         dest: "{{ adoc_report_path }}"
       vars:
-        start_time: "{{ start_time | int | strftime('%Y-%m-%d %H:%M:%S') }}"
-        end_time: "{{ end_time | int | strftime('%Y-%m-%d %H:%M:%S') }}"
-        duration: "{{ duration | int | strftime('%Y-%m-%d %H:%M:%S') }} seconds"
+        start_time: "{{ start_time }}"
+        end_time: "{{ end_time }}"
+        duration: "{{ duration }} seconds"
         packages: "{{ pkg_list.stdout_lines }}"
 
     - name: Add New Files
