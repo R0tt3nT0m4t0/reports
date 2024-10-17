@@ -1,0 +1,55 @@
+---
+- name: Generate an HTML report from a Jinja2 template
+  hosts: all
+  gather_facts: true
+  vars:
+    email_subject: Patching Report
+    email_host: 10.0.110.32
+    email_from: jumedina@redhat.com
+    email_to: jumedina@redhat.com
+    csv_path: /tmp
+    csv_filename: report.csv
+    headers: Hostname,Distro_Ver,Kernel_Ver,Last_Rebooted
+
+  tasks:
+  
+  - name: Last Reboot Information
+    ansible.builtin.shell: last reboot | grep -m1 "" | awk '{ print $1, $6, $7, $8 }'
+    register: last_reboot
+
+  - name: Create CSV with Header
+    ansible.builtin.lineinfile:
+      dest: "{{ csv_path }}/{{ csv_filename }}"
+      line: "{{ headers }}"
+      create: true
+      state: present
+    delegate_to: localhost
+    run_once: true
+
+  - name: Populate CSV File
+    ansible.builtin.lineinfile:
+      dest: "{{ csv_path }}/{{ csv_filename }}"
+      line: "{{ inventory_hostname }},{{ ansible_distribution_version }},{{ ansible_kernel }},{{ last_reboot.stdout }}"
+      create: true
+      state: present
+    delegate_to: localhost
+
+  - name: Read in CSV to Variable
+    community.general.read_csv:
+      path: "{{ csv_path }}/{{ csv_filename }}"
+    register: csv_file
+    delegate_to: localhost
+    run_once: true
+
+  - name: Send Email
+    community.general.mail:
+      host: "{{ email_host }}"
+      from: "{{ email_from }}"
+      port: 25
+      to: "{{ email_to }}"
+      subject: "[Ansible] {{ email_subject }}"
+      body: "{{ lookup('template', 'report.html.j2') }}"
+      attach: "{{ csv_path }}/{{ csv_filename }}"
+      subtype: html
+    delegate_to: localhost
+    run_once: true
