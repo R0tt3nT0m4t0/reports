@@ -7,8 +7,8 @@
     git_repo_path: /tmp/reports.tmp
     git_commit_message: "Updated upgrade reports"
     git_remote_repo: "https://{{ github_token }}@github.com/R0tt3nT0m4t0/reports.git"
-    html_report_path: "{{ git_repo_path }}/reports/upgrades_report{{ ansible_date_time.date }}.html"
-    adoc_report_path: "{{ git_repo_path }}/reports/upgrades_report{{ ansible_date_time.date }}.adoc"
+    html_report_path: "{{ git_repo_path }}/reports/upgrades_report_{{ ansible_date_time.date }}.html"
+    adoc_report_path: "{{ git_repo_path }}/reports/upgrades_report_{{ ansible_date_time.date }}.adoc"
   vars_files:
     - secret.yml
 
