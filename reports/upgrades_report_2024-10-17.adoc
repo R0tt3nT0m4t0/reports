@@ -5,8 +5,8 @@
 [%header,cols="1,1",stripes=even,align=center]
 |===
 |DESCRIPTION | TIME
-|Start Time | 1729187851
-|End Time | 1729187851
+|Start Time | 30
+|End Time | 30
 |Duration | 0
 |===
 
@@ -14,7 +14,7 @@
 
 The following packages need to be upgraded:
 
-- Last metadata expiration check: 2:27:32 ago on Thu 17 Oct 2024 10:30:00 AM CDT.
+- Last metadata expiration check: 2:30:32 ago on Thu 17 Oct 2024 10:30:00 AM CDT.
 - Available Upgrades
 - deja-dup.x86_64                46.1-2.fc40                      updates         
 - firefox.x86_64                 131.0.3-1.fc40                   updates         
