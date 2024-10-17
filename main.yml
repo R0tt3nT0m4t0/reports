@@ -16,20 +16,23 @@
 
     - name: Record Start Time
       set_fact:
-        start_time: "{{ ansible_date_time.iso8601 }}"
+        start_time: "{{ ansible_date_time.epoch }}"
 
     - name: Gather list of packages that need to be upgraded
       ansible.builtin.command:
         cmd: "{{ ansible_pkg_mgr }} list updates"
       register: pkg_list
 
+    - name: Sleep 10 Seconds to Make it Interesting
+      ansible.builtin.command: sleep 10
+
     - name: Record End Time
       set_fact:
-        end_time: "{{ ansible_date_time.iso8601 }}"
+        end_time: "{{ ansible_date_time.epoch }}"
 
     - name: Calculate Duration
       set_fact:
-        duration: "{{ (ansible_date_time.second - start_time.split('T')[1].split(':')[2]|int) + 60 * ((ansible_date_time.minute - start_time.split('T')[1].split(':')[1]|int) + 60 * (ansible_date_time.hour - start_time.split('T')[1].split(':')[0]|int)) }}"
+        duration: "{{ end_time | int - start_time | int }}"
 
     - name: Clone the Reports Repo
       ansible.builtin.git:
@@ -43,9 +46,9 @@
         src: report.html.j2
         dest: "{{ html_report_path }}"
       vars:
-        start_time: "{{ start_time }}"
-        end_time: "{{ end_tine }}"
-        duration: "{{ duration }} seconds"
+        start_time: "{{ start_time | int | strftime('%Y-%m-%d %H:%M:%S') }}"
+        end_time: "{{ end_time | int | strftime('%Y-%m-%d %H:%M:%S') }}"
+        duration: "{{ duration | int | strftime('%Y-%m-%d %H:%M:%S') }} seconds"
         packages: "{{ pkg_list.stdout_lines }}"
 
     - name: Generate Asciidoc report using Jinja2 template
@@ -54,7 +57,7 @@
         dest: "{{ adoc_report_path }}"
       vars:
         start_time: "{{ start_time }}"
-        end_time: "{{ end_tine }}"
+        end_time: "{{ end_time }}"
         duration: "{{ duration }} seconds"
         packages: "{{ pkg_list.stdout_lines }}"
 
