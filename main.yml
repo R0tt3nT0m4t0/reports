@@ -56,9 +56,9 @@
         src: report.adoc.j2
         dest: "{{ adoc_report_path }}"
       vars:
-        start_time: "{{ start_time }}"
-        end_time: "{{ end_time }}"
-        duration: "{{ duration }} seconds"
+        start_time: "{{ start_time | int | strftime('%Y-%m-%d %H:%M:%S') }}"
+        end_time: "{{ end_time | int | strftime('%Y-%m-%d %H:%M:%S') }}"
+        duration: "{{ duration | int | strftime('%Y-%m-%d %H:%M:%S') }} seconds"
         packages: "{{ pkg_list.stdout_lines }}"
 
     - name: Add New Files
