@@ -2,6 +2,7 @@
 - name: Generate Reports of Pending Upgrades on Systems
   hosts: all
   become: yes
+  gather_facts: false
 
   vars:
     git_repo_path: /tmp/reports.tmp
@@ -15,9 +16,9 @@
   tasks:
 
     - name: Record Start Time
-      set_fact:
-        start_time: "{{ ansible_date_time.second }}"
-
+      ansible.builtin.command: date +%s
+      register: start_time
+      
     - name: Gather list of packages that need to be upgraded
       ansible.builtin.command:
         cmd: "{{ ansible_pkg_mgr }} list updates"
@@ -27,8 +28,8 @@
       ansible.builtin.command: sleep 10
 
     - name: Record End Time
-      set_fact:
-        end_time: "{{ ansible_date_time.second }}"
+      ansible.builtin.command: date +%s
+      register: end_time
 
     - name: Calculate Duration
       set_fact:
