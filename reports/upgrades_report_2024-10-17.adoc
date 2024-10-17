@@ -1,5 +1,3 @@
-include::attributes.adoc[]
-
 = Package Upgrade Report
 
 == Durations
@@ -7,8 +5,8 @@ include::attributes.adoc[]
 [%header,cols="1,1",stripes=even,align=center]
 |===
 |DESCRIPTION | TIME
-|Start Time | 1729195314
-|End Time | 1729195326
+|Start Time | 1729195442
+|End Time | 1729195454
 |Duration | 12
 |===
 
@@ -16,7 +14,7 @@ include::attributes.adoc[]
 
 The following packages need to be upgraded:
 
-- Last metadata expiration check: 0:50:01 ago on Thu 17 Oct 2024 02:11:55 PM CDT.
+- Last metadata expiration check: 0:52:09 ago on Thu 17 Oct 2024 02:11:55 PM CDT.
 - Available Upgrades
 - deja-dup.x86_64                46.1-2.fc40                      updates         
 - firefox.x86_64                 131.0.3-1.fc40                   updates         
