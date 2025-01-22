@@ -1,7 +1,7 @@
 ---
 - name: Generate Reports of Pending Upgrades on Systems
   hosts: all
-  become: yes
+  become: true
 
   vars:
     git_repo_path: /tmp/reports.tmp
@@ -18,23 +18,27 @@
       ansible.builtin.command:
         cmd: "date +%s"
       register: start_time
-      
+      changed_when: false
+
     - name: Gather list of packages that need to be upgraded
       ansible.builtin.command:
         cmd: "{{ ansible_pkg_mgr }} list updates"
       register: pkg_list
+      changed_when: false
 
     - name: Sleep 10 Seconds to Make it Interesting
       ansible.builtin.command:
         cmd: "sleep 10"
+      changed_when: false
 
     - name: Record End Time
-      ansible.builtin.command: 
+      ansible.builtin.command:
         cmd: "date +%s"
       register: end_time
+      changed_when: false
 
     - name: Calculate Duration
-      set_fact:
+      ansible.builtin.set_fact:
         duration: "{{ end_time.stdout | int - start_time.stdout | int }}"
 
     - name: Clone the Reports Repo
@@ -42,7 +46,7 @@
         repo: "{{ git_remote_repo }}"
         dest: "{{ git_repo_path }}"
         version: main
-        force: yes
+        force: true
 
 #    - name: Debug
 #      ansible.builtin.debug:
@@ -52,6 +56,7 @@
       ansible.builtin.template:
         src: report.html.j2
         dest: "{{ html_report_path }}"
+        mode: "644"
       vars:
         start_time: "{{ start_time }}"
         end_time: "{{ end_time }}"
@@ -62,6 +67,7 @@
       ansible.builtin.template:
         src: report.adoc.j2
         dest: "{{ adoc_report_path }}"
+        mode: "644"
       vars:
         start_time: "{{ start_time }}"
         end_time: "{{ end_time }}"
@@ -82,5 +88,3 @@
       ansible.builtin.command:
         cmd: git push "{{ git_remote_repo }}" main
         chdir: "{{ git_repo_path }}"
-
-

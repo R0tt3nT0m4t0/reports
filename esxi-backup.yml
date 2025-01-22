@@ -1,0 +1,84 @@
+---
+- name: Create backup of ESXi configuration
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    # VCenter Vars
+    vcenter_hostname: "vcenter.example.com"
+    vcenter_username: "administrator@vsphere.local"
+    vcenter_password: "your_password"
+    esxi_hostname: "esxi.example.com"
+    backup_dir: "/path/to/backup"
+    timestamp: "{{ ansible_date_time.iso8601_basic }}"
+    esxi_backup_file: "{{ backup_dir }}/{{ esxi_hostname }}_backup_{{ timestamp }}.cfg"
+    git_commit_message: "Updated upgrade reports"
+    git_branch: "main"
+    git_username: "your-username"
+    git_password: "your-password"
+    git_repo: "https://{{ git_username }}:{{ git_password }}@github.schwab.com/security/ESXi_configs/{{ esxi_backup_file }}"
+
+  tasks:
+
+    - name: Ensure backup directory exists
+      ansible.builtin.file:
+        path: "{{ backup_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Create backup of ESXi configuration
+      community.vmware.vmware_cfg_backup:
+        hostname: "{{ esxi_hostname }}"
+        username: "{{ esxi_username }}"
+        password: "{{ esxi_password }}"
+        dest: "{{ git_repo }}"
+        validate_certs: false
+        state: saved
+      register: backup_result
+
+    - name: Check if backup was successful
+      ansible.builtin.debug:
+        msg: "Backup completed: {{ backup_result }}"
+
+    - name: Check if previous backup file exists
+      ansible.builtin.stat:
+        path: "{{ backup_dir }}/{{ esxi_hostname }}_backup_previous.cfg"
+      register: previous_backup_stat
+
+    - name: Compare current and previous backup files
+      ansible.builtin.command:
+        cmd: "diff {{ esxi_backup_file }} {{ backup_dir }}/{{ esxi_hostname }}_backup_previous.cfg"
+      register: diff_result
+      when: previous_backup_stat.stat.exists
+      failed_when: diff_result.rc != 0
+      changed_when: false
+      ignore_errors: true
+
+    - name: Show configuration differences
+      ansible.builtin.debug:
+        msg: "{{ diff_result.stdout_lines }}"
+      when: diff_result.rc == 0
+
+    - name: Update previous backup file
+      ansible.builtin.copy:
+        src: "{{ esxi_backup_file }}"
+        dest: "{{ backup_dir }}/{{ esxi_hostname }}_backup_previous.cfg"
+        mode: "644"
+
+    - name: Stage changes
+      ansible.builtin.command:
+        cmd: git add .
+        chdir: "{{ git_repo_dest }}"
+
+    - name: Commit changes
+      ansible.builtin.command:
+        cmd: git commit -m "Updated example file"
+        chdir: "{{ git_repo_dest }}"
+      register: commit_result
+      failed_when: commit_result.rc not in [0, 1]
+      # Ignore error if there's nothing to commit
+
+    - name: Push changes to the remote repository
+      ansible.builtin.command:
+        cmd: git push origin "{{ git_branch }}"
+        chdir: "{{ git_repo_dest }}"
