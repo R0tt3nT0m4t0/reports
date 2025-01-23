@@ -1,0 +1,27 @@
+---
+- name: Extract vCenter Configuration Information
+  hosts: localhost
+  gather_facts: false
+  vars:
+    vcenter_hostname: "<vcenter-hostname>"  # Replace with your vCenter hostname or IP
+    vcenter_username: "<vcenter-username>"  # Replace with your vCenter username
+    vcenter_password: "<vcenter-password>"  # Replace with your vCenter password
+    validate_certs: false                   # Set to true if using valid SSL certificates
+
+  tasks:
+    - name: Retrieve vCenter extensions information
+      community.vmware.vcenter_extension_info:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: "{{ validate_certs }}"
+      register: vcenter_extensions
+
+    - name: Save vCenter configuration to a JSON file
+      copy:
+        content: "{{ vcenter_extensions | to_nice_json }}"
+        dest: "./vcenter_configuration.json"
+
+    - name: Display retrieved vCenter extension information
+      debug:
+        var: vcenter_extensions
